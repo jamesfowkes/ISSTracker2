@@ -56,6 +56,19 @@
 #include "lib_tmr8_tick.h"
 
 /*
+ * Utility Library Includes
+ */
+ 
+#include "util_time.h"
+#include "util_geo.h"
+
+/*
+ * Application Includes
+ */
+
+#include "tlehandler.h"
+
+/*
  * Private Defines and Datatypes
  */
 
@@ -81,6 +94,7 @@ int main(void)
 	wdt_disable();
 
 	setupTimer();
+	TLE_Handler_Init();
 	
 	/* All processing interrupt based from here*/
 
@@ -90,7 +104,7 @@ int main(void)
 	{
 		if (TMR8_Tick_TestAndClear(&heartbeatTick))
 		{
-
+			
 		}
 	}
 

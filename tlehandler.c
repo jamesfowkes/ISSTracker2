@@ -6,7 +6,7 @@
  *  Created on: 02 July 2014
  *      Author: james
  *
- *		Target: ATMEGA328P
+ *		Target: ATMEGA128
  */
 
 /*
@@ -47,6 +47,13 @@
  
 #include "util_memory_placement.h"
 #include "util_time.h"
+#include "util_geo.h"
+
+/*
+ * Application Includes
+ */
+
+#include "tlehandler.h"
 
 /*
  * Private Defines and Datatypes
@@ -86,7 +93,6 @@ struct tle_ascii s_TLE = {
 struct sgp_data s_data;
 
 static struct vector pos;
-static struct vector vel;
 	
 /*
  * Public Function Definitions
@@ -132,8 +138,19 @@ void TLE_Handler_Update(TM * time)
 	epoch += (double)time->tm_min / (double)MINS_PER_DAY;
 	epoch += (double)time->tm_sec / (double)S_PER_DAY;
 	
-	sgp4call(Julian_Date_of_Epoch(epoch), &pos,& vel, &s_data);
-	Convert_Sat_State(&pos, &vel);
+	sgp4call(Julian_Date_of_Epoch(epoch), &pos, NULL, &s_data);
+	Convert_Sat_State(&pos, NULL);
+}
+
+void TLE_Handler_GetViewAngles(VECTOR_3D * observer, VIEW_ANGLES * viewAngles)
+{
+	VECTOR_3D sat = {(float)pos.v[0], (float)pos.v[1], (float)pos.v[2]};
+	
+	VECTOR_3D observerToSat;
+	Difference_3DVectors(observer, &sat, &observerToSat);
+	
+	viewAngles->azimuth = Azimuth_3DVector(&observerToSat);
+	viewAngles->elevation = Elevation_3DVector(&observerToSat);
 }
 
 /*
