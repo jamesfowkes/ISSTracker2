@@ -142,12 +142,17 @@ int main(void)
 	
 	TLE_Handler_Init();
 	
+	DO_TEST_HARNESS_SETUP();
+	
 	/* All processing interrupt based from here*/
-
+	
 	sei();
 
 	while (true)
 	{
+	
+		DO_TEST_HARNESS_RUNNING();
+		
 		if (TMR8_Tick_TestAndClear(&heartbeatTick))
 		{
 			// TODO: Blink LED
