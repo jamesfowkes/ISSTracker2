@@ -45,7 +45,10 @@
  * Generic Library Includes
  */
 
-// None
+#include "button.h"
+#include "ringbuf.h"
+#include "statemachinemanager.h"
+#include "statemachine.h"
 
 /*
  * AVR Library Includes
@@ -67,6 +70,7 @@
  */
 
 #include "tlehandler.h"
+#include "app_test_harness.h"
 
 /*
  * Private Defines and Datatypes
@@ -74,17 +78,57 @@
 
 #define BLINK_TICK_MS 500
 
+enum states
+{
+	IDLE, MOVING, UPDATING
+};
+typedef enum states STATES;
+
+enum events
+{
+	UPDATE_BUTTON_PRESS,
+	NEW_POSITION,
+	BTN_IDLE,
+	MOVE_COMPLETE,
+	UDPATE_COMPLETE
+};
+typedef enum events EVENTS;
+
 /*
  * Function Prototypes
  */
-
+ 
+static void setupStateMachine(void);
 static void setupTimer(void);
+static void onRTCOverflow(void);
+
+static void startUpdate(SM_STATEID old, SM_STATEID new, SM_EVENT e);
+static void startMoving(SM_STATEID old, SM_STATEID new, SM_EVENT e);
+static void updateTarget(SM_STATEID old, SM_STATEID new, SM_EVENT e);
 
 /*
  * Private Variables
  */
 
 static TMR8_TICK_CONFIG heartbeatTick;
+
+static TM s_time;
+
+static int8_t sm_index = 0;
+
+static const SM_STATE s_stateIdle = {IDLE, NULL, NULL};
+static const SM_STATE s_stateMoving = {MOVING, NULL, NULL};
+static const SM_STATE s_stateUpdating = {UPDATING, NULL, NULL};
+
+static SM_ENTRY sm[] = {
+	{ &s_stateIdle, 	UPDATE_BUTTON_PRESS,	startUpdate,	&s_stateUpdating },
+	{ &s_stateIdle, 	NEW_POSITION, 			startMoving,	&s_stateMoving },
+	
+	{ &s_stateMoving,	NEW_POSITION, 			updateTarget, 	&s_stateUpdating },
+	{ &s_stateMoving,	MOVE_COMPLETE, 			NULL, 			&s_stateIdle },
+	
+	{ &s_stateUpdating, UDPATE_COMPLETE,		NULL,			&s_stateIdle },
+};
 
 int main(void)
 {
@@ -93,7 +137,9 @@ int main(void)
 	MCUSR &= ~(1 << WDRF);
 	wdt_disable();
 
+	setupStateMachine();
 	setupTimer();
+	
 	TLE_Handler_Init();
 	
 	/* All processing interrupt based from here*/
@@ -104,8 +150,10 @@ int main(void)
 	{
 		if (TMR8_Tick_TestAndClear(&heartbeatTick))
 		{
-			
+			// TODO: Blink LED
 		}
+		
+		TLE_Handler_Update(&s_time);
 	}
 
 	return 0;
@@ -120,6 +168,35 @@ static void setupTimer(void)
 	heartbeatTick.reload = BLINK_TICK_MS;
 	heartbeatTick.active = true;
 	TMR8_Tick_AddTimerConfig(&heartbeatTick);
+	
+	//TODO: Setup 16-bit timer as RTC
+}
+
+static void setupStateMachine(void)
+{
+	SMM_Config(1, 5);
+	sm_index = SM_Init(&s_stateIdle, (SM_EVENT)UDPATE_COMPLETE, (SM_STATEID)UPDATING, sm);
+	SM_SetActive(sm_index, true);
+}
+
+static void onRTCOverflow(void)
+{
+	time_increment_seconds(&s_time);
+}
+
+static void startUpdate(SM_STATEID old, SM_STATEID new, SM_EVENT e)
+{
+	(void)old; (void)new; (void)e;
+}
+
+static void startMoving(SM_STATEID old, SM_STATEID new, SM_EVENT e)
+{
+	(void)old; (void)new; (void)e;
+}
+
+static void updateTarget(SM_STATEID old, SM_STATEID new, SM_EVENT e)
+{
+	(void)old; (void)new; (void)e;
 }
 
 

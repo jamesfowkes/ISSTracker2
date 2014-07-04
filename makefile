@@ -51,6 +51,9 @@ AVR_FILES = \
 	$(LIBS_DIR)/AVR/lib_tmr8_tick.c \
 	$(LIBS_DIR)/Devices/lcd/lcd.c \
 	$(LIBS_DIR)/Generics/memorypool.c \
+	$(LIBS_DIR)/Generics/ringbuf.c \
+	$(LIBS_DIR)/Generics/statemachinemanager.c \
+	$(LIBS_DIR)/Generics/statemachine.c \
 	$(LIBS_DIR)/Utility/util_geo.c
 	
 ALL_DEPENDENCY_FILES = $(AVR_FILES) $(SGP_FILES) 
