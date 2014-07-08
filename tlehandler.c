@@ -46,6 +46,8 @@
  */
  
 #include "util_memory_placement.h"
+#include "util_earth.h"
+#include "util_angle.h"
 #include "util_time.h"
 #include "util_geo.h"
 
@@ -93,7 +95,9 @@ struct tle_ascii s_TLE = {
 struct sgp_data s_data;
 
 static struct vector pos;
-	
+
+VECTOR_3D s_observer;
+
 /*
  * Public Function Definitions
  */
@@ -142,15 +146,22 @@ void TLE_Handler_Update(TM * time)
 	Convert_Sat_State(&pos, NULL);
 }
 
-void TLE_Handler_GetViewAngles(VECTOR_3D * observer, VIEW_ANGLES * viewAngles)
+void TLE_Handler_GetViewAngles(VIEW_ANGLES * viewAngles)
 {
 	VECTOR_3D sat = {(float)pos.v[0], (float)pos.v[1], (float)pos.v[2]};
 	
 	VECTOR_3D observerToSat;
-	Difference_3DVectors(observer, &sat, &observerToSat);
+	Difference_3DVectors(&s_observer, &sat, &observerToSat);
 	
 	viewAngles->azimuth = Azimuth_3DVector(&observerToSat);
 	viewAngles->elevation = Elevation_3DVector(&observerToSat);
+}
+
+void TLE_Handler_SetObserverCoords(float x_km, float y_km, float z_km)
+{
+	s_observer.x = x_km;
+	s_observer.y = y_km;
+	s_observer.z = z_km;
 }
 
 /*
