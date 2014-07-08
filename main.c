@@ -100,7 +100,7 @@ typedef enum events EVENTS;
  
 static void setupStateMachine(void);
 static void setupTimer(void);
-static void onRTCOverflow(void);
+//static void onRTCOverflow(void);
 
 static void startUpdate(SM_STATEID old, SM_STATEID new, SM_EVENT e);
 static void startMoving(SM_STATEID old, SM_STATEID new, SM_EVENT e);
@@ -184,10 +184,10 @@ static void setupStateMachine(void)
 	SM_SetActive(sm_index, true);
 }
 
-static void onRTCOverflow(void)
+/*static void onRTCOverflow(void)
 {
 	time_increment_seconds(&s_time);
-}
+}*/
 
 static void startUpdate(SM_STATEID old, SM_STATEID new, SM_EVENT e)
 {
