@@ -25,17 +25,11 @@ EXTRA_CFILES = \
 	$(LIBS_DIR)/AVR/lib_io.c \
 	$(LIBS_DIR)/AVR/lib_tmr8.c \
 	$(LIBS_DIR)/AVR/lib_tmr8_tick.c \
-	$(LIBS_DIR)/Devices/lcd/lcd.c \
 	$(LIBS_DIR)/Generics/memorypool.c \
 	$(LIBS_DIR)/Generics/ringbuf.c \
 	$(LIBS_DIR)/Generics/statemachinemanager.c \
 	$(LIBS_DIR)/Generics/statemachine.c \
-	$(LIBS_DIR)/Utility/util_geo.c \
-	$(SGP_DIR)/sgp_conv.c \
-	$(SGP_DIR)/sgp_deep.c \
-	$(SGP_DIR)/sgp_math.c \
-	$(SGP_DIR)/sgp_time.c \
-	$(SGP_DIR)/sgp4sdp4.c
+	$(LIBS_DIR)/Utility/util_geo.c
 
 OTHER_OBJS = $(SGP_OBJS)
 OTHER_TARGETS = SGP

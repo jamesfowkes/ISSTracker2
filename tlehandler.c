@@ -44,7 +44,7 @@
 /*
  * Utility Library Includes
  */
- 
+
 #include "util_memory_placement.h"
 #include "util_earth.h"
 #include "util_angle.h"
@@ -82,9 +82,9 @@ static char line0[] = DEFAULT_TLE_TITLE;
 static char line1[] = DEFAULT_TLE_LINE1;
 static char line2[] = DEFAULT_TLE_LINE2;
 
-IN_PMEM(char eeprom_line0[]) = DEFAULT_TLE_TITLE;
-IN_PMEM(char eeprom_line1[]) = DEFAULT_TLE_LINE1;
-IN_PMEM(char eeprom_line2[]) = DEFAULT_TLE_LINE2;
+char IN_EEPROM(eeprom_line0[]) = DEFAULT_TLE_TITLE;
+char IN_EEPROM(eeprom_line1[]) = DEFAULT_TLE_LINE1;
+char IN_EEPROM(eeprom_line2[]) = DEFAULT_TLE_LINE2;
 
 struct tle_ascii s_TLE = {
 	{line0,
