@@ -70,7 +70,7 @@ DECLARE_TEST_FUNC(ApplicationDefaultsAreSet)
 
 DECLARE_RESULT_FUNC(ApplicationDefaultsAreSet)
 {
-	(void)test;
+	
 }
 	
 void DO_TEST_HARNESS_SETUP(void)

@@ -112,7 +112,7 @@ static void updateTarget(SM_STATEID old, SM_STATEID new, SM_EVENT e);
 
 static TMR8_TICK_CONFIG heartbeatTick;
 
-static TM s_time;
+//static TM s_time;
 
 static int8_t sm_index = 0;
 
@@ -156,9 +156,10 @@ int main(void)
 		if (TMR8_Tick_TestAndClear(&heartbeatTick))
 		{
 			// TODO: Blink LED
+			DO_TEST_HARNESS_TICK();
 		}
 		
-		TLE_Handler_Update(&s_time);
+		//TLE_Handler_Update(&s_time);
 	}
 
 	return 0;
