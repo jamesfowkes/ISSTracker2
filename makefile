@@ -1,45 +1,17 @@
+include $(PROJECTS_PATH)/Libs/standard.mk
+
 NAME=isstracker2
 
 MCU_TARGET=atmega128
-
-CC=avr-gcc 
-LD=avr-ld
-SIZE=avr-size
-
-LIBS_DIR = $(PROJECTS_PATH)/Libs
-DEL = python $(LIBS_DIR)/del.py
+AVRDUDE_PART=m128
 
 SGP_DIR = $(LIBS_DIR)/SGP
-
 SGP_MODEL = SGP4
 
-SGP_FILES = \
-	$(SGP_DIR)/sgp_conv.c \
-	$(SGP_DIR)/sgp_deep.c \
-	$(SGP_DIR)/sgp_math.c \
-	$(SGP_DIR)/sgp_time.c \
-	$(SGP_DIR)/sgp4sdp4.c
-
-OPT_LEVEL=3
-
-CCFLAGS = \
-	-mmcu=$(MCU_TARGET) \
-	-g \
-	-std=c99 \
-	-Wall \
-	-Wextra \
+EXTRA_FLAGS = \
 	-DF_CPU=16000000 \
 	-DMEMORY_POOL_BYTES=512 \
-	-DSGP_MODEL_$(SGP_MODEL) \
-	-ffunction-sections \
-	-fdata-sections \
-	-O$(OPT_LEVEL) \
 	-DUNIX_TIME_TYPE=uint32_t
-
-LDFLAGS = \
-	--gc-sections --relax
-
-LD_SUFFIX = -lm -lc
 
 AVR_FILES = \
 	main.c \
@@ -52,28 +24,20 @@ AVR_FILES = \
 	$(LIBS_DIR)/Devices/lcd/lcd.c \
 	$(LIBS_DIR)/Generics/memorypool.c \
 	$(LIBS_DIR)/Utility/util_geo.c
+
+LDFLAGS = \
+	--gc-sections --relax
+
+CFILES = main.c $(SGP_FILES) $(AVR_FILES)
+
+EXTRA_INCLUDES = \
+	-I$(SGP_DIR)
 	
-ALL_DEPENDENCY_FILES = $(AVR_FILES) $(SGP_FILES) 
-ALL_DEPENDENCIES = $(ALL_DEPENDENCY_FILES:.c=.o)
+LD_SUFFIX = -lm -lc
 
-INCLUDES = \
-	-I$(SGP_DIR) \
-	-I$(LIBS_DIR)/AVR \
-	-I$(LIBS_DIR)/Devices \
-	-I$(LIBS_DIR)/Generics \
-	-I$(LIBS_DIR)/Utility
-	
-# all
-all : $(NAME).elf
+OTHER_OBJS = $(SGP_OBJS)
+OTHER_TARGETS = SGP
 
-# SGPExample.elf
-$(NAME).elf : $(ALL_DEPENDENCIES)
-	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $^ $(LD_SUFFIX)
+include $(PROJECTS_PATH)/make_avr.mk
+include $(SGP_DIR)/sgp.mk
 
-%.o:%.c
-	$(CC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
-
-size:
-	$(SIZE) -C $(NAME).elf --mcu=$(MCU_TARGET)
-clean :
-	$(DEL) $(ALL_DEPENDENCIES)
